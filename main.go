@@ -1,28 +1,34 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"time"
 )
 
 var LogsDir string
 
 func main() {
-	if len(os.Args) > 1 {
-		LogsDir = os.Args[1]
-	} else {
-		log.Fatalln("Arg missing error: File path should be provided as 1st argument")
+	logsDir := flag.String("d", "", "Logs directory")
+	age := flag.Float64("age", 3, "Files greater than the age will be uploaded to s3")
+	flag.Parse()
+	fmt.Println(*logsDir, *age)
+	if *logsDir == "" {
+		log.Fatalln("flag missing ===> -dir=<logs-directory>")
+	}
+	if *age == 0 {
+		log.Fatalln("flag missing ===> -age=<number in days>")
 	}
 
-	files, err := ioutil.ReadDir(LogsDir)
+	files, err := ioutil.ReadDir(*logsDir)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 
 	for _, file := range files {
-		fileInfo := NewFileInfo(LogsDir + "/" + file.Name())
+		fileInfo := NewFileInfo(*logsDir + file.Name())
 		createdTime, err := fileInfo.GetCreatedTime()
 		if err != nil {
 			log.Fatalln(err.Error())
@@ -30,10 +36,8 @@ func main() {
 
 		now := time.Now()
 		fileAge := now.Sub(createdTime).Hours() / 24
-		log.Printf("\nName = %s\nAge = %.2f days old (%vth %v %v)\n--------------------", file.Name(), fileAge, createdTime.Day(), createdTime.Month(), createdTime.Year())
 
-		if fileAge > 3 {
-			log.Println("Uploading " + file.Name() + " to s3...")
+		if fileAge > *age {
 			s3Uploader := NewS3Uploader()
 			s3Uploader.AddFileToS3(fileInfo.FilePath)
 		}

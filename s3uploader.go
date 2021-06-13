@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"log"
 	"net/http"
 	"os"
 
@@ -39,7 +40,7 @@ type S3Uploader struct {
 // AddFileToS3 will upload a single file to S3, it will require a pre-built aws session
 // and will set file info like content type and encryption on the uploaded file.
 func (uploader *S3Uploader) AddFileToS3(fileDir string) error {
-
+	log.Println("Uploading " + fileDir + " to s3...")
 	// Open the file for use
 	file, err := os.Open(fileDir)
 	if err != nil {

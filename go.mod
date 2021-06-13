@@ -1,4 +1,4 @@
-module scripts
+module s3_uploader
 
 go 1.15
 

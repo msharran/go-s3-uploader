@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"syscall"
 	"time"
@@ -23,5 +24,6 @@ func (f *FileInfo) GetCreatedTime() (ctime time.Time, err error) {
 	}
 	stat := fi.Sys().(*syscall.Stat_t)
 	ctime = time.Unix(int64(stat.Ctimespec.Sec), int64(stat.Ctimespec.Nsec))
+	log.Printf("\nName = %s\nCreatedDate = %vth %v %v\n--------------------", f.FilePath, ctime.Day(), ctime.Month(), ctime.Year())
 	return
 }
