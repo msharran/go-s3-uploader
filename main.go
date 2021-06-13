@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-var LogsDir string
-
 func main() {
 	logsDir := flag.String("d", "", "Logs directory")
 	age := flag.Float64("age", 3, "Files greater than the age will be uploaded to s3")
@@ -17,9 +15,6 @@ func main() {
 	fmt.Println(*logsDir, *age)
 	if *logsDir == "" {
 		log.Fatalln("flag missing ===> -dir=<logs-directory>")
-	}
-	if *age == 0 {
-		log.Fatalln("flag missing ===> -age=<number in days>")
 	}
 
 	files, err := ioutil.ReadDir(*logsDir)
